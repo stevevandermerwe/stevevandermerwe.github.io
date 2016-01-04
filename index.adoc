@@ -1,0 +1,144 @@
+:imagesdir: images
+
+= Systems Thinking Module
+
+''' 
+
+[quote,Wife]
+____
+What is the point of this?
+____
+
+
+'''
+
+== Overview
+
+The idea behind this module is that it uses a text based DSL to describe a Systems Thinking diagram. It then does the following things:
+
+* Produces an image representing the text in png format
+* The source for the image in DOT format (Graphviz)
+* Analyses the text and looks for:
+** Cycles which represent loops and thus archetypes
+** The number of:
+*** Calls in (per entity)
+*** Calls out (per entity)
+*** Number of positive influences
+*** Number of negative influences
+*** What other entities are affected by this entity
+
+
+.Usage
+[TIP]
+====
+This program is designed to be used as a stand alone component or as a plugin into a program like http://asciidocfx.org[AsciidocFX]
+====
+
+
+<<<
+
+== Input into program
+The grammar of the input looks like this:
+
+----
+originator affects recipient ':' description \n
+----
+
+.Grammar description
+[options="header"]
+|=======================
+|Key|Description
+|originator | Thing causing the action
+|affects  | Either + or - ( "+" means adds to, "-" means takes away from)
+|recipient  | Thing beign affected
+|description | Description of the event
+|=======================
+
+<<<
+
+=== Example input file
+This is a random made up example (Gemma is a dog if you are wondering...)
+
+[source,txt]
+----
+Steve + Karen : Walk
+Steve - Gemma : Swim
+Steve + Robert : Gaming
+Karen - Georgie : Clean room
+Karen + Steve : Hello
+Gemma - Dog : Bark
+Dog - Steve : Bite
+Steve - Dog : Shout
+Georgie + Steve : Swim
+Robert + Georgie : Play Games
+Karen + Robert : Books
+Karen + Georgie : Food
+Karen + Gemma : Feed
+Georgie - Karen : Grumpy
+----
+
+<<<
+== Output 
+=== Image output
+image::imageComplexFile.png[scaledwidth=90%]
+
+
+
+=== Analysis
+
+[source,txt]
+----
+Cycles detected:
+    Cycle : Steve  ->  Karen  ->  Georgie  
+    Cycle : Steve  ->  Karen  
+    Cycle : Steve  ->  Karen  ->  Robert  ->  Georgie  
+    Cycle : Steve  ->  Karen  ->  Gemma  ->  Dog  
+    Cycle : Steve  ->  Gemma  ->  Dog  
+    Cycle : Steve  ->  Robert  ->  Georgie  
+    Cycle : Steve  ->  Robert  ->  Georgie  ->  Karen  
+    Cycle : Steve  ->  Robert  ->  Georgie  ->  Karen  ->  Gemma  ->  Dog  
+    Cycle : Steve  ->  Dog  
+    Cycle : Karen  ->  Georgie  
+    Cycle : Karen  ->  Robert  ->  Georgie  
+
+Entity analysis:
+    Karen : out:5 in:2 positive:4 negative:1
+        recipients:Georgie  ,  Steve  ,  Robert  ,  Georgie  ,  Gemma  
+    Steve : out:4 in:3 positive:2 negative:2
+        recipients:Karen  ,  Gemma  ,  Robert  ,  Dog  
+    Georgie : out:2 in:3 positive:1 negative:1
+        recipients:Steve  ,  Karen  
+    Robert : out:1 in:2 positive:1 negative:0
+        recipients:Georgie  
+    Gemma : out:1 in:2 positive:0 negative:1
+        recipients:Dog  
+    Dog : out:1 in:2 positive:0 negative:1
+        recipients:Steve  
+----
+
+<<<
+=== Image source in DOT format
+----
+@startdot
+digraph foo {
+size="6,6";
+node [color=lightblue2, style=filled];
+    "Steve" -> "Karen" [label="Walk",color="black"];
+    "Steve" -> "Gemma" [label="Swim",color="red"];
+    "Steve" -> "Robert" [label="Gaming",color="black"];
+    "Karen" -> "Georgie" [label="Clean room",color="red"];
+    "Karen" -> "Steve" [label="Hello",color="black"];
+    "Gemma" -> "Dog" [label="Bark",color="red"];
+    "Dog" -> "Steve" [label="Bite",color="red"];
+    "Steve" -> "Dog" [label="Shout",color="red"];
+    "Georgie" -> "Steve" [label="Swim",color="black"];
+    "Robert" -> "Georgie" [label="Play Games",color="black"];
+    "Karen" -> "Robert" [label="Books",color="black"];
+    "Karen" -> "Georgie" [label="Food",color="black"];
+    "Karen" -> "Gemma" [label="Feed",color="black"];
+    "Georgie" -> "Karen" [label="Grumpy",color="red"];
+overlap=false
+fontsize=12;
+}
+@enddot
+----
