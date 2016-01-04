@@ -52,7 +52,7 @@ originator affects recipient ':' description \n
 |Key|Description
 |originator | Thing causing the action
 |affects  | Either + or - ( "+" means adds to, "-" means takes away from)
-|recipient  | Thing beign affected
+|recipient  | Thing being affected
 |description | Description of the event
 |=======================
 
