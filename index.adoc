@@ -14,7 +14,7 @@ ____
 
 == Overview
 
-The idea behind this module is that it uses a text based DSL to describe a Systems Thinking diagram. It then does the following things:
+The idea behind this module is that it uses a text based DSL (created with ANTLR4) to describe a Systems Thinking diagram. It then does the following things:
 
 * Produces an image representing the text in png format
 * The source for the image in DOT format (Graphviz)
@@ -26,6 +26,8 @@ The idea behind this module is that it uses a text based DSL to describe a Syste
 *** Number of positive influences
 *** Number of negative influences
 *** What other entities are affected by this entity
+
+I will upload the source once it is a bit more 'polished'
 
 
 .Usage
